@@ -12,7 +12,7 @@ from datetime import timedelta
 
 
 def abfluss(station, gefahrenstufen):
-    df_abfluss = pd.read_csv('{}.csv'.format(station))
+    df_abfluss = pd.read_csv('root/hydrofiles/{}.csv'.format(station))
     df_abfluss['Time'] = pd.to_datetime(df_abfluss['Time'])
     df_abfluss['date'] = pd.to_datetime(df_abfluss['Time'].dt.strftime('%Y-%m-%d %H:%M:%S')) + timedelta(hours=1)
     df_abfluss.columns = ['Time', 'abfluss', 'date']
@@ -22,7 +22,7 @@ def abfluss(station, gefahrenstufen):
     df_abfluss['gs3'] = gefahrenstufen['gs3']
     df_abfluss['gs4'] = gefahrenstufen['gs4']
     df_abfluss['gs5'] = gefahrenstufen['gs5']
-    df_abfluss.to_csv('final_data/final_{}.csv'.format(station), index=False)
+    df_abfluss.to_csv('root/hydrofiles/final_data/final_{}.csv'.format(station), index=False)
 
 
 # In[7]:
