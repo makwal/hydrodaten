@@ -85,7 +85,7 @@ def abfluss(station, gefahrenstufen):
         datawrapper_updater(gefahrenstufen['datawrapper-id'], last_three_days)
     
     #Export als csv
-    df_abfluss.to_csv('/root/hydrofiles/final_data/final_{}.csv'.format(station), index=False)
+    df_abfluss.to_csv('/root/hydrofiles/final_data/final_{}.csv'.format(station))
 
 
 # In[ ]:
