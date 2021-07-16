@@ -10,6 +10,38 @@ from datetime import timedelta, time
 from time import sleep
 
 
+# **Datawrapper-Update-Funktion**
+
+# In[ ]:
+
+
+#Grafik-Updates nur um 00.05 und 12 Uhr. Variablen werden in Abfluss-Funktion verwendet
+update_time1 = time(hour=0, minute=5)
+update_time2 = time(hour=12, minute=0)
+
+datawrapper_url = 'https://api.datawrapper.de/v3/charts/'
+headers = {"Authorization": "Bearer exBDzRsC86QAktkFECOOvK0ZjVTDN2u1LOWq6VjdTsaHUh9mjaKJodeYRIh75F68"}
+
+def datawrapper_updater(chart_id, last_three_days):
+    
+    url_update = datawrapper_url + chart_id
+    url_publish = url_update + "/publish"
+    
+    payload = {
+        
+    "metadata": {"visualize": {"custom-ticks-x": last_three_days}}
+    
+    }
+    
+    res_update = requests.patch(url_update, json=payload, headers=headers)
+    
+    sleep(3)
+    
+    res_publish = requests.post(url_publish, headers=headers)
+
+
+# **Hauptdaten: Abfluss-Funktion**
+
 # In[ ]:
 
 
@@ -40,6 +72,10 @@ def abfluss(station, gefahrenstufen):
     df_abfluss['gs4'] = gefahrenstufen['gs4']
     df_abfluss['gs5'] = gefahrenstufen['gs5']
     
+    #Wenn eine Bedingung == True, werden Grafiken upgedatet
+    if last_date_time == update_time1 or last_date_time == update_time2:
+        datawrapper_updater(gefahrenstufen['datawrapper-id'], last_three_days)
+    
     #Export als csv
     df_abfluss.to_csv('/root/hydrofiles/final_data/final_{}.csv'.format(station), index=False)
 
@@ -47,54 +83,67 @@ def abfluss(station, gefahrenstufen):
 # In[ ]:
 
 
+#Gefahrenstufen für jede Station
 stations = {
+    #Aare Brugg
     2016:
     {
         'gs1': 820,
         'gs2': 1100,
         'gs3': 1250,
         'gs4': 1350,
-        'gs5': 2000
+        'gs5': 2000,
+        'datawrapper-id': '1Zrrn'
     },
+    #Reuss Mellingen
     2018:
     {
         'gs1': 480,
         'gs2': 640,
         'gs3': 720,
         'gs4': 830,
-        'gs5': 2000
+        'gs5': 2000,
+        'datawrapper-id': '9Vw1A'
     },
+    #Aare Murgenthal
     2063:
     {
         'gs1': 720,
         'gs2': 940,
         'gs3': 1050,
         'gs4': 1150,
-        'gs5': 2000
+        'gs5': 2000,
+        'datawrapper-id': 'gZgpV'
     },
+    #Rhein Rheinfelden
     2091:
     {
         'gs1': 2500,
         'gs2': 3000,
         'gs3': 3600,
         'gs4': 4500,
-        'gs5': 6000
+        'gs5': 6000,
+        'datawrapper-id': 'p9yMw'
     },
+    #Reuss Mühlau
     2110:
     {
         'gs1': 470,
         'gs2': 600,
         'gs3': 700,
         'gs4': 810,
-        'gs5': 2000
+        'gs5': 2000,
+        'datawrapper-id': 'BjWyo'
     },
+    #Limmat Baden
     2243:
     {
         'gs1': 350,
         'gs2': 480,
         'gs3': 550,
         'gs4': 630,
-        'gs5': 2000
+        'gs5': 2000,
+        'datawrapper-id': 'JUMNz'
     }
 }
 
@@ -115,46 +164,4 @@ datawrapper_charts = {
     'reuss_mühlau': 'BjWyo',
     'rhein_rheinfelden': 'p9yMw'
 }
-
-
-# In[11]:
-
-
-datawrapper_url = 'https://api.datawrapper.de/v3/charts/'
-headers = {"Authorization": "Bearer exBDzRsC86QAktkFECOOvK0ZjVTDN2u1LOWq6VjdTsaHUh9mjaKJodeYRIh75F68"}
-
-def datawrapper_updater(chart_id):
-    
-    url_update = datawrapper_url + chart_id
-    url_publish = url_update + "/publish"
-    
-    payload = {
-        
-    "metadata": {"visualize": {"custom-ticks-x": last_three_days}}
-    
-    }
-    
-    res_update = requests.patch(url_update, json=payload, headers=headers)
-    
-    sleep(3)
-    
-    res_publish = requests.post(url_publish, headers=headers)
-
-
-# In[ ]:
-
-
-#Prüfen, ob Grafiken upgedatet werden sollen. Updates nur um 00.05 und 12 Uhr
-update_time1 = time(hour=0, minute=5)
-update_time2 = time(hour=12, minute=0)
-
-
-# In[12]:
-
-
-#Wenn Bedingung == True, werden Grafiken upgedatet
-if last_date_time == update_time1 or last_date_time == update_time2:
-    for key, value in datawrapper_charts.items():
-        datawrapper_updater(value)
-        sleep(2)
 
