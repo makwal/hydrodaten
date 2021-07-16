@@ -8,7 +8,7 @@ import requests
 import pandas as pd
 from datetime import timedelta, time
 from time import sleep
-
+import numpy as np
 
 # **Datawrapper-Update-Funktion**
 
@@ -62,8 +62,16 @@ def abfluss(station, gefahrenstufen):
     last_date = df_abfluss['date'].tail(1).values[0]
     last_date_time = pd.Timestamp(last_date).time()
     
-    #nur die benötigten Spalten behalten
+    #nur die benötigten Spalten behalten, date als Index
     df_abfluss = df_abfluss[['date', 'Abfluss']].copy()
+    df_abfluss.set_index('date', inplace=True)
+    
+    #Zusätzliche, leere Zeiten einfügen (damit die Grafiken besser aussehen)
+    additional_values = pd.date_range(start=df_abfluss.index.max(), freq="5min", periods=240)
+    additional_values = additional_values[1:]
+    
+    for t in additional_values:
+        df_abfluss.loc[t] = np.nan
     
     #Gefahrenstufen hinzufügen
     df_abfluss['gs1'] = gefahrenstufen['gs1']
