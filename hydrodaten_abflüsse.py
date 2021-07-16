@@ -10,6 +10,7 @@ from datetime import timedelta, time
 from time import sleep
 import numpy as np
 
+
 # **Datawrapper-Update-Funktion**
 
 # In[ ]:
@@ -22,14 +23,14 @@ update_time2 = time(hour=12, minute=0)
 datawrapper_url = 'https://api.datawrapper.de/v3/charts/'
 headers = {"Authorization": "Bearer exBDzRsC86QAktkFECOOvK0ZjVTDN2u1LOWq6VjdTsaHUh9mjaKJodeYRIh75F68"}
 
-def datawrapper_updater(chart_id, last_three_days):
+def datawrapper_updater(chart_id, four_day_range):
     
     url_update = datawrapper_url + chart_id
     url_publish = url_update + "/publish"
     
     payload = {
         
-    "metadata": {"visualize": {"custom-ticks-x": last_three_days}}
+    "metadata": {"visualize": {"custom-ticks-x": four_day_range}}
     
     }
     
@@ -54,10 +55,6 @@ def abfluss(station, gefahrenstufen):
     df_abfluss['date'] = pd.to_datetime(df_abfluss['Time'].dt.strftime('%Y-%m-%d %H:%M:%S')) + timedelta(hours=2)
     df_abfluss.columns = ['Time', 'Abfluss', 'date']
     
-    #Daten von heute, gestern und vorgestern (für Datawrapper-Grafiken)
-    last_three_days = df_abfluss['date'].dt.strftime('%d.%m.%Y').unique()[1:]
-    last_three_days = ', '.join(last_three_days)
-    
     #letzte Zeitangabe (je nach dem werden Datawrapper-Grafiken upgedatet und neu publiziert)
     last_date = df_abfluss['date'].tail(1).values[0]
     last_date_time = pd.Timestamp(last_date).time()
@@ -80,9 +77,13 @@ def abfluss(station, gefahrenstufen):
     df_abfluss['gs4'] = gefahrenstufen['gs4']
     df_abfluss['gs5'] = gefahrenstufen['gs5']
     
+    #Daten von heute, gestern, vorgestern und morgen (für Datawrapper-Grafiken)
+    four_day_range = df_abfluss.index.strftime('%d.%m.%Y').unique()[1:]
+    four_day_range = ', '.join(four_day_range)
+    
     #Wenn eine Bedingung == True, werden Grafiken upgedatet
     if last_date_time == update_time1 or last_date_time == update_time2:
-        datawrapper_updater(gefahrenstufen['datawrapper-id'], last_three_days)
+        datawrapper_updater(gefahrenstufen['datawrapper-id'], four_day_range)
     
     #Export als csv
     df_abfluss.to_csv('/root/hydrofiles/final_data/final_{}.csv'.format(station))
