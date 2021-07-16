@@ -52,7 +52,7 @@ def abfluss(station, gefahrenstufen):
     #Formatieren
     df_abfluss['Time'] = pd.to_datetime(df_abfluss['Time'])
     df_abfluss['date'] = pd.to_datetime(df_abfluss['Time'].dt.strftime('%Y-%m-%d %H:%M:%S')) + timedelta(hours=2)
-    df_abfluss.columns = ['Time', 'abfluss', 'date']
+    df_abfluss.columns = ['Time', 'Abfluss', 'date']
     
     #Daten von heute, gestern und vorgestern (für Datawrapper-Grafiken)
     last_three_days = df_abfluss['date'].dt.strftime('%d.%m.%Y').unique()[1:]
@@ -63,7 +63,7 @@ def abfluss(station, gefahrenstufen):
     last_date_time = pd.Timestamp(last_date).time()
     
     #nur die benötigten Spalten behalten
-    df_abfluss = df_abfluss[['date', 'abfluss']].copy()
+    df_abfluss = df_abfluss[['date', 'Abfluss']].copy()
     
     #Gefahrenstufen hinzufügen
     df_abfluss['gs1'] = gefahrenstufen['gs1']
@@ -164,6 +164,26 @@ stations = {
         'gs4': 3050,
         'gs5': 5000,
         'datawrapper-id': 'Nv1Rj'
+    },
+    #Reuss - Luzern, Geissmattbrücke
+    2152:
+    {
+        'gs1': 280,
+        'gs2': 350,
+        'gs3': 390,
+        'gs4': 430,
+        'gs5': 750,
+        'datawrapper-id': 'KAji1'
+    },
+    #Reuss - Seedorf
+    2056:
+    {
+        'gs1': 280,
+        'gs2': 450,
+        'gs3': 570,
+        'gs4': 690,
+        'gs5': 1500,
+        'datawrapper-id': 'b9L8z'
     }
 }
 
