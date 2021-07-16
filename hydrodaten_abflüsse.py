@@ -184,6 +184,16 @@ stations = {
         'gs4': 690,
         'gs5': 1500,
         'datawrapper-id': 'b9L8z'
+    },
+    #Engelberger Aa - Buochs, Flugplatz
+    2481:
+    {
+        'gs1': 70,
+        'gs2': 110,
+        'gs3': 140,
+        'gs4': 170,
+        'gs5': 300,
+        'datawrapper-id': 'WhEA0'
     }
 }
 
