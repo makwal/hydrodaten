@@ -83,7 +83,7 @@ def abfluss(station, gefahrenstufen):
 # In[ ]:
 
 
-#Gefahrenstufen für jede Station
+#Gefahrenstufen und Datawrapper-Chart-ID für jede Station
 stations = {
     #Aare Brugg
     2016:
@@ -144,6 +144,26 @@ stations = {
         'gs4': 630,
         'gs5': 2000,
         'datawrapper-id': 'JUMNz'
+    },
+    #Rheintaler Binnenkanal - St. Margrethen
+    2139:
+    {
+        'gs1': 75,
+        'gs2': 110,
+        'gs3': 130,
+        'gs4': 150,
+        'gs5': 300,
+        'datawrapper-id': '1u2ku'
+    },
+    #Rhein - Diepoldsau, Rietbrücke
+    2473:
+    {
+        'gs1': 1300,
+        'gs2': 1950,
+        'gs3': 2450,
+        'gs4': 3050,
+        'gs5': 5000,
+        'datawrapper-id': 'Nv1Rj'
     }
 }
 
