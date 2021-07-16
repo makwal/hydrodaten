@@ -1,31 +1,50 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[5]:
 
 
+import requests
 import pandas as pd
-from datetime import timedelta
+from datetime import timedelta, time
+from time import sleep
 
 
 # In[ ]:
 
 
+#Funktion erstellen, die die Stationsnummer und die dazugehörigen Gefahrenstufen mitnimmt
 def abfluss(station, gefahrenstufen):
     df_abfluss = pd.read_csv('/root/hydrofiles/{}.csv'.format(station))
+    
+    #Formatieren
     df_abfluss['Time'] = pd.to_datetime(df_abfluss['Time'])
     df_abfluss['date'] = pd.to_datetime(df_abfluss['Time'].dt.strftime('%Y-%m-%d %H:%M:%S')) + timedelta(hours=2)
     df_abfluss.columns = ['Time', 'abfluss', 'date']
+    
+    #Daten von heute, gestern und vorgestern (für Datawrapper-Grafiken)
+    last_three_days = df_abfluss['date'].dt.strftime('%d.%m.%Y').unique()[1:]
+    last_three_days = ', '.join(last_three_days)
+    
+    #letzte Zeitangabe (je nach dem werden Datawrapper-Grafiken upgedatet und neu publiziert)
+    last_date = df_abfluss['date'].tail(1).values[0]
+    last_date_time = pd.Timestamp(last_date).time()
+    
+    #nur die benötigten Spalten behalten
     df_abfluss = df_abfluss[['date', 'abfluss']].copy()
+    
+    #Gefahrenstufen hinzufügen
     df_abfluss['gs1'] = gefahrenstufen['gs1']
     df_abfluss['gs2'] = gefahrenstufen['gs2']
     df_abfluss['gs3'] = gefahrenstufen['gs3']
     df_abfluss['gs4'] = gefahrenstufen['gs4']
     df_abfluss['gs5'] = gefahrenstufen['gs5']
+    
+    #Export als csv
     df_abfluss.to_csv('/root/hydrofiles/final_data/final_{}.csv'.format(station), index=False)
 
 
-# In[7]:
+# In[ ]:
 
 
 stations = {
@@ -81,4 +100,61 @@ stations = {
 
 for key, value in stations.items():
     abfluss(str(key), value)
+
+
+# **Datawrapper-Update**
+
+# In[6]:
+
+
+datawrapper_charts = {
+    'aare_brugg': '1Zrrn',
+    'aare_murgenthal': 'gZgpV',
+    'limmat_baden': 'JUMNz',
+    'reuss_mellingen': '9Vw1A',
+    'reuss_mühlau': 'BjWyo',
+    'rhein_rheinfelden': 'p9yMw'
+}
+
+
+# In[11]:
+
+
+datawrapper_url = 'https://api.datawrapper.de/v3/charts/'
+headers = {"Authorization": "Bearer exBDzRsC86QAktkFECOOvK0ZjVTDN2u1LOWq6VjdTsaHUh9mjaKJodeYRIh75F68"}
+
+def datawrapper_updater(chart_id):
+    
+    url_update = datawrapper_url + chart_id
+    url_publish = url_update + "/publish"
+    
+    payload = {
+        
+    "metadata": {"visualize": {"custom-ticks-x": last_three_days}}
+    
+    }
+    
+    res_update = requests.patch(url_update, json=payload, headers=headers)
+    
+    sleep(3)
+    
+    res_publish = requests.post(url_publish, headers=headers)
+
+
+# In[ ]:
+
+
+#Prüfen, ob Grafiken upgedatet werden sollen. Updates nur um 00.05 und 12 Uhr
+update_time1 = time(hour=0, minute=5)
+update_time2 = time(hour=12, minute=0)
+
+
+# In[12]:
+
+
+#Wenn Bedingung == True, werden Grafiken upgedatet
+if last_date_time == update_time1 or last_date_time == update_time2:
+    for key, value in datawrapper_charts.items():
+        datawrapper_updater(value)
+        sleep(2)
 
