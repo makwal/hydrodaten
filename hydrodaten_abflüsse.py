@@ -18,7 +18,7 @@ import numpy as np
 
 #Grafik-Updates nur um 00.05 und 12 Uhr. Variablen werden in Abfluss-Funktion verwendet
 update_time1 = time(hour=0, minute=5)
-update_time2 = time(hour=12, minute=0)
+update_time2 = time(hour=11, minute=30)
 
 datawrapper_url = 'https://api.datawrapper.de/v3/charts/'
 headers = {"Authorization": "Bearer exBDzRsC86QAktkFECOOvK0ZjVTDN2u1LOWq6VjdTsaHUh9mjaKJodeYRIh75F68"}
